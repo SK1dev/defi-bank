@@ -1,11 +1,12 @@
-// SPDX-License-Identifier: UNLICENSED
-pragma solidity ^0.8.9;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 
-contract Bank {
+contract BankAccount {
   address owner;
+
   bytes32[] public whitelistedSymbols;
   mapping(bytes32 => address) public whitelistedTokens;
   mapping(address => mapping(bytes32 => uint256)) public balances;
