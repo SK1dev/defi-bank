@@ -1,8 +1,7 @@
 import "./App.css";
 import { ethers } from "ethers";
 import { useEffect, useState } from "react";
-import DepositModal from "./components/modals/DepositModal";
-import WithdrawModal from "./components/modals/WithdrawModal";
+import DepositWithdrawCard from "./components/DepositWithdrawCard";
 
 import bankAccountArtifact from './abis/BankAccount.json';
 import maticArtifact from './abis/Matic.json';
@@ -22,8 +21,7 @@ function App() {
   const [tokenSymbols, setTokenSymbols] = useState([]);
 
   const [amount, setAmount] = useState(0);
-  const [showDepositModal, setShowDepositModal] = useState(false);
-  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
+  const [showCard, setShowCard] = useState(false);
   const [selectedSymbol, setSelectedSymbol] = useState(undefined);
   const [isDeposit, setIsDeposit] = useState(true);
   const [isWithdraw, setIsWithdraw] = useState(true);
@@ -48,8 +46,8 @@ function App() {
       bankAccountContract
         .connect(provider)
         .getWhitelistedSymbols()
-        .then((result) => {
-          const symbols = result.map((s) => toString(s));
+        .then(result => {
+          const symbols = result.map(s => toString(s));
           setTokenSymbols(symbols);
           getTokenContracts(symbols, bankAccountContract, provider);
         });
@@ -70,19 +68,19 @@ function App() {
   };
 
   const getTokenContracts = async (symbols, bankAccountContract, provider) => {
-    symbols.map(async (symbol) => {
+    symbols.map(async symbol => {
       const contract = await getTokenContract(symbol, bankAccountContract, provider);
-      setTokenContracts((prev) => ({ ...prev, [symbol]: contract }));
+      setTokenContracts(prev => ({ ...prev, [symbol]: contract }));
     });
   };
 
   const isConnected = () => signer !== undefined;
 
-  const getSigner = async (provider) => {
+  const getSigner = async provider => {
     provider.send("eth_requestAccounts", []);
     const signer = provider.getSigner();
 
-    signer.getAddress().then((address) => {
+    signer.getAddress().then(address => {
       setSignerAddress(address);
     });
 
@@ -90,7 +88,7 @@ function App() {
   };
 
   const connect = () => {
-    getSigner(provider).then((signer) => {
+    getSigner(provider).then(signer => {
       setSigner(signer);
       getTokenBalances(signer);
     });
@@ -103,21 +101,16 @@ function App() {
     return toEther(balance);
   };
 
-  const getTokenBalances = (signer) => {
-    tokenSymbols.map(async (symbol) => {
+  const getTokenBalances = signer => {
+    tokenSymbols.map(async symbol => {
       const balance = await getTokenBalance(symbol, signer);
-      setTokenBalances((prev) => ({ ...prev, [symbol]: balance.toString() }));
+      setTokenBalances(prev => ({ ...prev, [symbol]: balance.toString() }));
     });
   };
 
-  const displayDepositModal = (symbol) => {
+  const displayDepositWithdrawCard = symbol => {
     setSelectedSymbol(symbol);
-    setShowDepositModal(true);
-  };
-
-  const displayWithdrawModal = (symbol) => {
-    setSelectedSymbol(symbol);
-    setShowWithdrawModal(true);
+    setShowCard(true);
   };
 
   const depositTokens = (wei, symbol) => {
@@ -159,59 +152,44 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header">
+       {!showCard ? (
+        <div>
         {isConnected() ? (
           <div>
+           <header className="App-header">
             <p>Welcome {signerAddress?.substring(0, 10)}...</p>
-            <div>
+            </header>
+            <div className="app-content">
               <div className="list-group">
                 <div className="list-group-item">
                   {Object.keys(tokenBalances).map((symbol, idx) => (
-                    <div className=" row d-flex py-3" key={idx}>
-                      <div className="col-md-3">
+                    <div className="balances-card-row" key={idx}>
+                      <div className="symbol">
                         <div>{symbol.toUpperCase()}</div>
                       </div>
-
-                      <div className="d-flex gap-4 col-md-3">
-                        <small className="opacity-50 text-nowrap">
+                      
+                        <p className="token-balance">
                           {toRound(tokenBalances[symbol])}
-                        </small>
-                      </div>
+                        </p> 
+                                              
                       {deposit &&
-                      <div className="d-flex gap-4 col-md-6">
+                      <div>
                         <button
-                          onClick={() => displayDepositModal(symbol)}
-                          className="btn btn-primary"
+                          onClick={() => displayDepositWithdrawCard(symbol)}
+                          className="btn-primary"
                         >
                           Deposit
                         </button>
-                        <DepositModal
-                          show={showDepositModal}
-                          onClose={() => setShowDepositModal(false)}
-                          symbol={selectedSymbol}
-                          deposit={deposit}
-                          isDeposit={isDeposit}
-                          setIsDeposit={setIsDeposit}
-                          setAmount={setAmount}
-                        />
                       </div>}
                       {withdraw &&
-                      <div className="d-flex gap-4 col-md-6">
+                      <div>
                         <button
-                          onClick={() => displayWithdrawModal(symbol)}
-                          className="btn btn-primary"
+                          onClick={() => displayDepositWithdrawCard(symbol)}
+                          className="btn-primary"
                         >
                           Withdraw
                         </button>
-                        <WithdrawModal
-                          show={showWithdrawModal}
-                          onClose={() => setShowWithdrawModal(false)}
-                          symbol={selectedSymbol}
-                          withdraw={withdraw}
-                          isWithdraw={isWithdraw}
-                          setIsWithdraw={setIsWithdraw}
-                          setAmount={setAmount}
-                        />
+                     
                       </div>}
                     </div>
                   ))}
@@ -220,14 +198,20 @@ function App() {
             </div>
           </div>
         ) : (
-          <div>
+          <div className="connect-container">
             <p>You are not connected</p>
-            <button onClick={connect} className="btn btn-primary">
+            <button onClick={connect} className="connect-btn">
               Connect Metamask
             </button>
           </div>
-        )}
-      </header>
+        )}</div>) : (
+                        <DepositWithdrawCard
+                          symbol={selectedSymbol}
+                          withdraw={withdraw}
+                          isWithdraw={isWithdraw}
+                          setIsWithdraw={setIsWithdraw}
+                          setAmount={setAmount}
+                        />)}
     </div>
   );
 }
