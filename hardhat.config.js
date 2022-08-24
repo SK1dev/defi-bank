@@ -1,5 +1,5 @@
-require("@nomiclabs/hardhat-waffle");
 const fs = require('fs');
+require("@nomiclabs/hardhat-ethers");
 // const infuraId = fs.readFileSync(".infuraid").toString().trim() || "";
 
 module.exports = {

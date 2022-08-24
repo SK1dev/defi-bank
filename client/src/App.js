@@ -4,9 +4,13 @@ import { useEffect, useState } from "react";
 import DepositModal from "./components/modals/DepositModal";
 import WithdrawModal from "./components/modals/WithdrawModal";
 
-import bankAccountArtifact from "./abis/BankAccount.json";
-import maticArtifact from "./abis/Matic.json";
-import usdtArtifact from "./abis/Usdt.json";
+import bankAccountArtifact from './abis/BankAccount.json';
+import maticArtifact from './abis/Matic.json';
+import usdtArtifact from './abis/Usdt.json';
+
+import {
+  bankAccountContractAddress
+} from './config'
 
 function App() {
   const [provider, setProvider] = useState(undefined);
@@ -36,7 +40,7 @@ function App() {
       setProvider(provider);
 
       const bankAccountContract = await new ethers.Contract(
-        '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512',
+        bankAccountContractAddress,
         bankAccountArtifact.abi
       );
       setBankAccountContract(bankAccountContract);
