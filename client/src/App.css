@@ -4,6 +4,10 @@
   height: 100vh;
 }
 
+.App .logo {
+  padding: 20px;
+}
+
 .App-header {
   height: 60px;
 }
@@ -19,18 +23,28 @@
   justify-content: space-between;
   padding: 40px 150px;
   font-size: 22px;
+  width: 60%;
+  margin-top: -120px;
+  margin-left: auto;
+  align-items: center;
+}
+
+.connect-container p {
+  margin-bottom: 0;
 }
 
 .connect-container button {
   border-radius: 5px;
   background-color: #3b66af;
+  border: none;
+  padding: 10px;
 }
 
 .list-group {
   width: 50%;
   display: flex;
   justify-content: center;
-  
+  border-radius: 10px !important;
 }
 
 .list-group .list-group-item {
