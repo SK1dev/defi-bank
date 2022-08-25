@@ -54,7 +54,7 @@ contract BankAccount {
   function depositTokens(uint256 _amount, bytes32 _symbol) external {
     balances[msg.sender][_symbol] += _amount;
     IERC20(whitelistedTokens[_symbol]).transferFrom(msg.sender, address(this), _amount);
-     emit LogDeposit(msg.sender, _amount);
+    emit LogDeposit(msg.sender, _amount);
   }
 
   function withdrawTokens(uint256 _withdrawAmount, bytes32 _symbol) external {
