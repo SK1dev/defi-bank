@@ -164,8 +164,12 @@ function App() {
   };
   return (
     <div className="App">
-       <img className="logo" src={logo} alt="BankX Logo" width="200px" />
-       Your best crypto lending and savings solution ---------
+      <img className="logo" src={logo} alt="BankX Logo" width="200px" />
+      {!isConnected() && (
+        <header className="App-header">
+          <h1> Your best crypto banking solution.</h1>
+        </header>
+      )}
       {!showCard ? (
         <div>
           {isConnected() ? (
@@ -211,7 +215,7 @@ function App() {
             </div>
           ) : (
             <div className="connect-container">
-              <p>You are not connected</p>
+              <p>You are not connected.</p>
               <button onClick={connect} className="connect-btn">
                 Connect Metamask
               </button>

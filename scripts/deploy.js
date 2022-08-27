@@ -1,61 +1,40 @@
-const hre = require('hardhat')
-const fs = require('fs')
+const hre = require("hardhat");
+const fs = require('fs');
 
 async function main() {
+  [signer1, signer2] = await ethers.getSigners();
 
-  const BankAccount = await hre.ethers.getContractFactory('BankAccount')
+  const BankAccount = await ethers.getContractFactory("BankAccount", signer1);
   const bankAccountContract = await BankAccount.deploy();
-  const Matic = await hre.ethers.getContractFactory('Matic')
+
+  const Matic = await ethers.getContractFactory("Matic", signer2);
   const matic = await Matic.deploy();
-  const Usdt = await hre.ethers.getContractFactory('Usdt')
+  const Usdt = await ethers.getContractFactory("Usdt", signer2);
   const usdt = await Usdt.deploy();
 
-  const JointSavings = await hre.ethers.getContractFactory('JointSavings')
-  const jointSavingsContract = await JointSavings.deploy();
-
-
-
-  const Token = await hre.ethers.getContractFactory('Token')
-  const tokenContract = await Token.deploy();
-  const Loan = await hre.ethers.getContractFactory('Loan')
-  const loanContract = await Loan.deploy();
-  //change token's owner/minter from deployer to bankX
-  await tokenContract.passMinterRole(loanContract.address);
-  //pass token address for bankX contract(for future minting)
-  await loanContract(tokenContract.address);
-
-
-
-  
   await bankAccountContract.whitelistToken(
-    hre.ethers.utils.formatBytes32String('Matic'),
+    ethers.utils.formatBytes32String('Matic'),
     matic.address
   );
   await bankAccountContract.whitelistToken(
-    hre.ethers.utils.formatBytes32String('Usdt'),
+    ethers.utils.formatBytes32String('Usdt'),
     usdt.address
   );
   await bankAccountContract.whitelistToken(
-    hre.ethers.utils.formatBytes32String('Eth'),
+    ethers.utils.formatBytes32String('Eth'),
     '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266'
   );
 
   fs.writeFileSync('./config.js', `
-  export const bankAccountContractAddress = '${bankAccountContract.address}'
-  export const maticAddress = '${matic.address}'
-  export const usdtAddress = '${usdt.address}'
-  export const jointSavingsContractAddress = '${jointSavingsContract.address}'
-  export const loanContractAddress = '${loanContract.address}'
-  export const tokenContractAddress = '${tokenContract.address}'
+  export const bankAccountContractAddress = "${bankAccountContract.address}"
+  export const maticAddress = "${matic.address}"
+  export const usdtAddress = "${usdt.address}"
   
   `)
 
-  console.log('BankAccount deployed to:', bankAccountContract.address)
-  console.log('Matic deployed to:', matic.address)
-  console.log('Tether deployed to:', usdt.address)
-  console.log('JointSavings deployed to:', jointSavingsContract.address)
-  console.log('Loan deployed to:', loanContract.address)
-  console.log('Token deployed to:', tokenContract.address)
+  console.log("BankAccount deployed to:", bankAccountContract.address, "by", signer1.address);
+  console.log("Matic deployed to:", matic.address, "by", signer2.address);
+  console.log("Tether deployed to:", usdt.address, "by", signer2.address);
 
 }
 

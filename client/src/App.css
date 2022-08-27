@@ -8,6 +8,12 @@
   padding: 20px;
 }
 
+ h1 {
+  font-size: 20px;
+  text-align: center;
+  padding-top: 200px;
+}
+
 .App-header {
   height: 60px;
 }
@@ -20,11 +26,11 @@
 
 .connect-container {
   display: flex;
-  justify-content: space-between;
-  padding: 40px 150px;
+  justify-content: space-around;
+  padding: 0 40px 50px;
   font-size: 22px;
   width: 60%;
-  margin-top: -120px;
+  margin-top: -140px;
   margin-left: auto;
   align-items: center;
 }
